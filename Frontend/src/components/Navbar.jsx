@@ -16,13 +16,13 @@ const Navbar = () => {
         <li className='py-1'>
           <NavLink to="/" className="flex flex-col items-center">
             HOME
-            <hr className='border-none outline-none h-0.5 bg-primary w-3/5 mx-auto '/>
+            <hr className='border-none outline-none h-0.5 bg-primary w-3/5 mx-auto hidden'/>
           </NavLink>
         </li>
         <li className='py-1'>
           <NavLink to="/doctors" className="flex flex-col items-center">
             ALL DOCTORS
-            <hr className='border-none outline-none h-0.5 bg-primary w-3/5 mx-auto '/>
+            <hr className='border-none outline-none h-0.5 bg-primary w-3/5 mx-auto hidden'/>
           </NavLink>
         </li>
         <li className='py-1'>
