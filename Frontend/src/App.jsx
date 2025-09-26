@@ -9,6 +9,7 @@ import Contact from './pages/Contact'
 import MyProfile from './pages/MyProfile'
 import MyAppointment from './pages/MyAppointment'
 import Appointment from './pages/Appointment'
+import Footer from './components/Footer'
 
 const App = () => {
   return (
@@ -28,6 +29,7 @@ const App = () => {
         <Route path='*' element={<div className='text-3xl font-bold text-center mt-20'>404 Not Found</div>}></Route>
 
       </Routes>
+      <Footer/>
     </div>
   )
 }
