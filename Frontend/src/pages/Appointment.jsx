@@ -3,10 +3,11 @@ import { useParams } from 'react-router-dom'
 import { useContext,useState } from 'react';
 import { AppContext } from '../contexts/AppContext';
 import { assets } from '../assets/assets_frontend/assets';
+import RelatedDoctors from '../components/RelatedDoctors';
 
 const Appointment = () => {
   const {docId}=useParams();
-  const daysOfweek=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+  const daysOfweek=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
   const {doctors,currencySymbol}=useContext(AppContext);
   const [docInfo,setDocInfo]=useState(null);
   const [docSlots,setDocslots]=useState([]);
@@ -17,7 +18,7 @@ const Appointment = () => {
     setDocInfo(docInfo);
   }
   const getAvailableSlots=async()=>{
-    setDocslots([]);
+    let allSlots = [];
     let today=new Date();
     for(let i=0;i<7;i++){
       let currentdate=new Date(today);
@@ -40,8 +41,9 @@ const Appointment = () => {
       timeslots.push({datetime:new Date(currentdate),time:formattedTime});
  currentdate.setMinutes(currentdate.getMinutes()+30);
     }
-    setDocslots([...ProgressEvent,timeslots]);
+    allSlots.push(timeslots);
     }
+    setDocslots(allSlots);
   }
   useEffect(()=>{
     fetchDocInfo();
@@ -61,10 +63,10 @@ const Appointment = () => {
           <p className='flex items-center gap-2 text-2xl font-medium text-gray-900'>{docInfo.name} <img className="w-5" src={assets.verified_icon}></img></p>
         <div className='flex items-center gap-2 text-sm mt-1 text-gray-600'>
           <p>{docInfo.degree}-{docInfo.speciality}</p>
-          < button classname="py-0.5 px-2 border text-xs rounded-full">{docInfo.experience}</button>
+          < button className="py-0.5 px-2 border text-xs rounded-full">{docInfo.experience}</button>
         </div>
         <div>
-          <p className='flex items-center gap-1 text-sm font-medium tex-gray-900 mt-3'>About <img src={assets.info_icon} alt=""></img></p>
+          <p className='flex items-center gap-1 text-sm font-medium text-gray-900 mt-3'>About <img src={assets.info_icon} alt=""></img></p>
           <p className='text-sm text-gray-500 max-w-[700px] mt-1'>{docInfo.about}</p>
         </div>
         <p className='text-gray-500 font-medium mt-4'>Appointment fee:<span className='text-gray-600'>{currencySymbol}{docInfo.fees}</span></p>
@@ -83,9 +85,17 @@ const Appointment = () => {
             ))
           }
         </div>
+        <div className='flex items-center gap-3 w-full overflow-x-scroll mt-4'>
+          {
+            docSlots.length && docSlots[slotIndex].map((item,index)=>(<p onClick={()=>setSlotTime(item.time)} className={`text-sm font-light flex-shrink-0 px-5 py-2 rounded-full cursor-pointer ${item.time===slotTime?'bg-primary text-white':'text-gray-400 border border-gray-300'}`} key={index}>{item.time.toLowerCase()}</p>))
+          }
+        </div>
+        <button className='bg-primary text-white text-sm font-light px-14 py-3 rounded-full my-6'>Book an appointment</button>
 
      
       </div>
+      <RelatedDoctors docId={docId} speciality={docInfo.speciality}/>
+
     </div>
   )
 }
