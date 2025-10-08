@@ -26,17 +26,33 @@ const Appointment = () => {
       let endTime=new Date();
       endTime.setDate(today.getDate()+i);
       endTime.setHours(21,0,0,0);
-      if(today.getDate()===currentdate.getDate()){
-        currentdate.setHours(currentdate.getHours()>10?currentdate.getHours()+1:10);
-        currentdate.setMinutes(currentdate.getMinutes()>30?30:0);
-      }
+      if(today.getDate() === currentdate.getDate()){
+    let hours = currentdate.getHours();
+    let minutes = currentdate.getMinutes();
+
+    if(hours < 10){
+        hours = 10;
+        minutes = 0;
+    } else if(minutes < 30){
+        minutes = 30; // round up to next half hour
+        hours = hours;
+    } else {
+        minutes = 0;
+        hours = hours + 1; // round up to next full hour
+    }
+
+    currentdate.setHours(hours);
+    currentdate.setMinutes(minutes);
+}
+
       else{
         currentdate.setHours(10);
         currentdate.setMinutes(0);
       }
       let timeslots=[];
       while(currentdate<endTime){
-        let formattedTime=currentdate.toLocaleTimeString([],{hour:'2-digit'});
+        let formattedTime=currentdate.toLocaleTimeString([],{hour:'2-digit',minute: '2-digit',
+  hour12: true, });
    
       timeslots.push({datetime:new Date(currentdate),time:formattedTime});
  currentdate.setMinutes(currentdate.getMinutes()+30);
@@ -53,7 +69,7 @@ const Appointment = () => {
   },[docInfo]);
 
     return docInfo && (
-    <div>
+    <div >
       <div className='flex flex-col sm:flex-row gap-4'>
         <div>
           <img className="bg-primary w-full sm:max-w-72 rounded-lg" src={docInfo.image} alt=""/>
@@ -94,8 +110,8 @@ const Appointment = () => {
 
      
       </div>
-      <RelatedDoctors docId={docId} speciality={docInfo.speciality}/>
-
+     
+ <RelatedDoctors docId={docId} speciality={docInfo.speciality}/>
     </div>
   )
 }
