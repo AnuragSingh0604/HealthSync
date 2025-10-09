@@ -10,7 +10,16 @@ const Navbar = () => {
   const [token,setToken] = useState(true);
   return (
     <div className='flex items-center justify-between text-sm py-4 mb-5 border-b border-b-gray-400'>
-      <img src={assets.logo} className='w-44 cursor-pointer'/>
+     
+      <h1 className="w-44 cursor-pointer" style={{
+  fontFamily: 'Inter, sans-serif',
+  fontSize: '1.5rem',
+  fontWeight: '600',
+  color: '#5f6fff',
+  marginLeft: '10px'
+}}>
+  HealthSync
+</h1>
       
       <ul className='hidden md:flex items-center gap-5 font-medium'>
         <li className='py-1'>
