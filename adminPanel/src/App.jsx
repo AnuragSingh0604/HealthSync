@@ -9,6 +9,7 @@ import { Routes,Route } from 'react-router-dom';
 import Dashboard from './pages/Admin/Dashboard.jsx';
 import AllApointments from './pages/Admin/AllApointments.jsx';
 import AddDoctor from './pages/Admin/AddDoctor.jsx';
+import DoctorsList from './pages/Admin/DoctorsList.jsx';
 const App = () => {
   const {aToken}=useContext(AdminContext);
   return  aToken ? (
@@ -21,8 +22,8 @@ const App = () => {
           <Route path='/' element={<></>}></Route>
           <Route path="/adminDashboard" element={<Dashboard/>}></Route>
           <Route path="/allAppointments" element={<AllApointments/>}></Route>
-          <Route path="/addDoctor" element={AddDoctor}></Route>
-          <Route path="/doctorList" element={<AddDoctor></AddDoctor>}></Route>
+          <Route path="/addDoctor" element={<AddDoctor></AddDoctor>}></Route>
+          <Route path="/doctorList" element={<DoctorsList/>}></Route>
         </Routes>
       </div>
       
