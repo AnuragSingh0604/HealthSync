@@ -4,7 +4,7 @@ import { AdminContext } from '../context/AdminContext.jsx';
 import { assets } from '../assets/assets_admin/assets.js';
 import { NavLink } from 'react-router-dom';
 
-const sidebar = () => {
+const Sidebar = () => {
     const {aToken}=useContext(AdminContext);    
   return (
     <div className='min-h-screen bg-white border-r shadow-md'>
@@ -34,4 +34,4 @@ const sidebar = () => {
   )
 }
 
-export default sidebar
+export default Sidebar
