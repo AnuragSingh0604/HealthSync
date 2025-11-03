@@ -20,6 +20,7 @@ const addDoctor=async(req,res)=>{
             
             const uploadedImage=await cloudinary.uploader.upload(image.path,{resource_type  :'image'});
             const imageUrl=uploadedImage.secure_url;
+            
             const newDoctor=new Doctor({
                 name,
                 email,
@@ -35,6 +36,7 @@ const addDoctor=async(req,res)=>{
                 image:imageUrl
             });
             await newDoctor.save();
+            console.log("new doctor added:",newDoctor);
             res.status(201).json({success:true,message:"doctor added successfully"});
     }
     catch(error){
@@ -57,7 +59,17 @@ const addDoctor=async(req,res)=>{
                 console.error("Error in loginAdmin:",error);
                 res.status(500).json({success:false,message:error.message});
             }
+
+        }
+        const allDoctors=async(req,res)=>{
+            try{
+                const doctors=await Doctor.find({}).select('-password');
+                res.status(200).json({success:true,doctors});
+            }catch(error){
+                console.error("Error in allDoctors:",error);
+                res.status(500).json({success:false,message:error.message});
+            }
         }
 
 
-    export {addDoctor,loginAdmin};
+    export {addDoctor,loginAdmin,allDoctors};

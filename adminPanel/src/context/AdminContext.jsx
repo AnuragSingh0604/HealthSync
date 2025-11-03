@@ -1,15 +1,56 @@
+import axios from 'axios';
 import { createContext } from 'react';
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 export const AdminContext =createContext();
 const AdminContextProvider =(props)=>{
     const [aToken,setAToken]=useState(localStorage.getItem('aToken')?localStorage.getItem("aToken"):"");
-    const backendUrl=import.meta.env.VITE_BACKEND_URL;  
-
+   const [doctors,setDoctors]=useState([]); 
+    const backendUrl=import.meta.env.VITE_BACKEND_URL; 
+    const getAllDoctors=async()=>{
+        try{
+            const {data}=await axios.get(`${backendUrl}/admin/all-doctors`,{
+                headers:{
+                   Authorization: `Bearer ${aToken}`,
+                }
+            });
+           
+            if(data.success){
+                setDoctors(data.doctors);
+                
+        }
+        else{
+            toast.error("Failed to fetch doctors");
+        }
+    }
+        catch(error){
+            toast.error(error.message);
+            
+        }};
+    const changeAvailability=async(doctorId)=>{
+        try{
+            const {data}=await axios.post(`${backendUrl}/admin/change-availability`,{doctorId},{
+                headers:{
+                   Authorization: `Bearer ${aToken}`,
+                }
+            });
+            if(data.success){
+                toast.success(data.message);
+                getAllDoctors();
+        }
+        else{
+            toast.error("Failed to change availability");
+        }
+    }
+        catch(error){
+            toast.error(error.message);
+            
+        }};     
         
     const value={
         aToken,
         setAToken,
-        backendUrl
+        backendUrl,doctors,getAllDoctors,changeAvailability
     }
 
     return(
