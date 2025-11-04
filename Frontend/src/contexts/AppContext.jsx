@@ -9,6 +9,7 @@ export const AppProvider = (props) => {
     const currencySymbol="$";
     const backendUrl=import.meta.env.VITE_BACKEND_URL;
     const [doctors,setDoctors]=useState([]);
+    const [token,setToken]=useState(localStorage.getItem("token")?localStorage.getItem("token"):false);
     const getAllDoctors=async()=>{
         try{
             const {data}=await axios.get(`${backendUrl}/doctor/list`);
@@ -28,7 +29,7 @@ export const AppProvider = (props) => {
     },[doctors,setDoctors]);
             
     const value={
-        doctors,currencySymbol
+        doctors,currencySymbol,token,setToken,backendUrl
     }
     return <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
 }

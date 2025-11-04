@@ -37,4 +37,26 @@ const registerUser = async (req, res) => {
     }
         // Additional validation and user registration logic...
     }
-    export { registerUser };
+    const loginUser = async (req, res) => {
+        try{
+        // User login logic...
+        const {email, password} = req.body;
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: "Email and password are required" });
+        }
+        const user = await UserModel.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ success: false, message: "Invalid email or password" });
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ success: false, message: "Invalid email or password" });
+        }
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        res.status(200).json({ success: true, message: "Login successful", token: token }); 
+    } catch (error) {
+        console.error("Error in loginUser:", error);
+        res.status(500).json({ success: false, message: error.message });
+    };
+}
+    export { registerUser , loginUser };
