@@ -6,10 +6,11 @@ const authUser=(req,res,next)=>{
             return res.status(401).json({success:false,message:"authorization denied"});
         }
         const decoded=jwt.verify(token,process.env.JWT_SECRET);
+        
         req.body.userId=decoded.userId;
         next();
     }catch(error){
-        console.error("Error in authAdmin middleware:",error);
+        console.error("Error in authUser middleware:",error);
         res.status(500).json({success:false,message:error.message});
     }
 }
