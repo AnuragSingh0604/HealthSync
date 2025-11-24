@@ -9,9 +9,29 @@ const authUser=(req,res,next)=>{
         
         req.body.userId=decoded.userId;
         next();
-    }catch(error){
-        console.error("Error in authUser middleware:",error);
-        res.status(500).json({success:false,message:error.message});
+    }catch (error) {
+    
+
+    
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({
+        success: false,
+        message: "Token expired. Please log in again.",
+      });
     }
+
+    if (error.name === "JsonWebTokenError") {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid token. Please log in again.",
+      });
+    }
+
+    
+    return res.status(500).json({
+      success: false,
+      message: "Authentication error: " + error.message,
+    });
+  }
 }
 export default authUser;

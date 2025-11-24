@@ -17,7 +17,7 @@ const Login = () => {
     e.preventDefault();
     try{
       if(state==="Sign Up"){
-        // Sign Up logic
+       
         const {data} = await axios.post(`${backendUrl}/user/register`,{
           name,email,password
         })
@@ -33,7 +33,7 @@ const Login = () => {
          
       }
       else{
-        // Login logic
+        
         const {data} = await axios.post(`${backendUrl}/user/login`,{
           email,password
         })

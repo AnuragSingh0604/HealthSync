@@ -9,8 +9,11 @@ export const AppProvider = (props) => {
     const currencySymbol="$";
     const backendUrl=import.meta.env.VITE_BACKEND_URL;
     const [doctors,setDoctors]=useState([]);
-    const [userData,setUserData]=useState(null);
-    const [token,setToken]=useState(localStorage.getItem("token")?localStorage.getItem("token"):false);
+    const [userdata,setUserData]=useState(null);
+   const [token, setToken] = useState(
+  localStorage.getItem("token") || false
+);
+
     const getAllDoctors=async()=>{
         try{
             const {data}=await axios.get(`${backendUrl}/doctor/list`);
@@ -25,37 +28,49 @@ export const AppProvider = (props) => {
             toast.error("Error fetching doctors:", error.message);
         }
     };
-    const loadUserData=async()=>{
-        try{
-            const {data}=await axios.get(`${backendUrl}/user/profile`,{
-                headers:{                           
-                    Authorization:`Bearer ${token}`
-                }
-            });
-            if(data.success){
-                setUserData(data.user);
-            }
-            else{
-                toast.error(data.message);
-            }
-        }catch(error){
-            toast.error("Error fetching user data:", error.message);
-        }
+    const loadUserData = async () => {
+  try {
+    const { data } = await axios.post(
+      `${backendUrl}/user/profile`,
+      {},
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (data.success) {
+      setUserData(data.user);
+    } else {
+      toast.error(data.message);
+      setUserData(null);
+      localStorage.removeItem("token");
+      setToken(false);
     }
+  } catch (error) {
+    console.log("Profile load error:", error.message);
+    setUserData(null);
+    localStorage.removeItem("token");
+    setToken(false);
+  }
+};
+
     useEffect(()=>{
         getAllDoctors();
-    },[doctors,setDoctors]);
+    },[]);
     useEffect(()=>{
         if(token){
+            console.log(token)
             loadUserData();
         }
         else{
-            setUserData(false);
+            setUserData(null);
         }
     },[token]);
             
     const value={
-        doctors,currencySymbol,token,setToken,backendUrl,userData,setUserData,loadUserData
+        doctors,currencySymbol,token,setToken,backendUrl,userdata,setUserData,loadUserData
     }
     return <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
 }

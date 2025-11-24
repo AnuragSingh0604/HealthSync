@@ -6,6 +6,6 @@ const userRouter = express.Router();
 userRouter.post('/register', registerUser);
 userRouter.post('/login', loginUser);
 userRouter.post('/profile',authUser, getProfile);
-userRouter.put('/profile',upload.single('image'),authUser, updateProfile);
+userRouter.put('/profile',authUser,upload.single('image'), updateProfile);
 
 export default userRouter;
