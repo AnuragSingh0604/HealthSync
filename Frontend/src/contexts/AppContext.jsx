@@ -70,7 +70,7 @@ export const AppProvider = (props) => {
     },[token]);
             
     const value={
-        doctors,currencySymbol,token,setToken,backendUrl,userdata,setUserData,loadUserData
+        doctors,getAllDoctors,currencySymbol,token,setToken,backendUrl,userdata,setUserData,loadUserData
     }
     return <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
 }

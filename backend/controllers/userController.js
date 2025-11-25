@@ -38,11 +38,11 @@ const registerUser = async (req, res) => {
         console.error("Error in registerUser:", error);
         res.status(500).json({ success: false, message: error.message });
     }
-        // Additional validation and user registration logic...
+        
     }
     const loginUser = async (req, res) => {
         try{
-        // User login logic...
+       
         const {email, password} = req.body;
         if (!email || !password) {
             return res.status(400).json({ success: false, message: "Email and password are required" });
@@ -110,13 +110,13 @@ const updateProfile = async (req, res) => {
 }
 const bookAppointment = async (req, res) => {
     try {
-        // Appointment booking logic...
+       
         const { userId, doctorId, slotTime,slotDate} = req.body;
         const doctorData = await DoctorModel.findById(doctorId).select('-password');
         if (!doctorData.availability) { 
             return res.status(400).json({ success: false, message: "Doctor is not available for appointments" });
         }
-        // Further appointment booking logic...
+      
        
         let slots_booked = doctorData.slots_booked || {};
         if (slots_booked[slotDate]  ) {
