@@ -61,7 +61,7 @@ export const AppProvider = (props) => {
     },[]);
     useEffect(()=>{
         if(token){
-            console.log(token)
+           
             loadUserData();
         }
         else{

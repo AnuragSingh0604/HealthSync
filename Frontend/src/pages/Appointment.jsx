@@ -20,6 +20,7 @@ const Appointment = () => {
   const [slotTime,setSlotTime]=useState("");
   const fetchDocInfo=async()=>{
     const docInfo=doctors.find(doc=>doc._id===docId);
+
     setDocInfo(docInfo);
   }
   const getAvailableSlots=async()=>{
@@ -63,7 +64,9 @@ const Appointment = () => {
   let year=currentdate.getFullYear();
   const slotDate=day+"-"+month+"-"+year;
   const slotTime=formattedTime;
+  console.log(docInfo.slots_booked);
   const isSlotAvailable=docInfo.slots_booked && docInfo.slots_booked[slotDate] && docInfo.slots_booked[slotDate].includes(slotTime)? false:true ;
+  console.log(isSlotAvailable);
   if(isSlotAvailable) 
   {
  timeslots.push({datetime:new Date(currentdate),time:formattedTime});
@@ -115,9 +118,11 @@ const Appointment = () => {
 }
   useEffect(()=>{
     fetchDocInfo();
-  },[doctors,docId]);
+   
+  },[docId]);
   useEffect(()=>{
     getAvailableSlots();
+    console.log(docId);
   },[docInfo]);
 
     return docInfo && (
