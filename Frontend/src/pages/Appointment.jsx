@@ -18,11 +18,25 @@ const Appointment = () => {
   const [docSlots,setDocslots]=useState([]);
   const [slotIndex,setSlotIndex]=useState(0);
   const [slotTime,setSlotTime]=useState("");
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [notfound,setNotfound]=useState(false); 
   const fetchDocInfo=async()=>{
-    const docInfo=doctors.find(doc=>doc._id===docId);
-
-    setDocInfo(docInfo);
+    setLoadingSlots(true);
+    if (Array.isArray(doctors) && doctors.length > 0) {
+      const found = doctors.find(d => d._id === docId);
+      
+      if (found) {
+        setDocInfo(found);
+        
+       
+      }
+      else{
+        setNotfound(true);
+      }
+      setLoadingSlots(false);
+      return;
   }
+}
   const getAvailableSlots=async()=>{
     let allSlots = [];
     let today=new Date();
@@ -40,11 +54,11 @@ const Appointment = () => {
         hours = 10;
         minutes = 0;
     } else if(minutes < 30){
-        minutes = 30; // round up to next half hour
+        minutes = 30;
         hours = hours;
     } else {
         minutes = 0;
-        hours = hours + 1; // round up to next full hour
+        hours = hours + 1; 
     }
 
     currentdate.setHours(hours);
@@ -64,9 +78,9 @@ const Appointment = () => {
   let year=currentdate.getFullYear();
   const slotDate=day+"-"+month+"-"+year;
   const slotTime=formattedTime;
-  console.log(docInfo.slots_booked);
+  
   const isSlotAvailable=docInfo.slots_booked && docInfo.slots_booked[slotDate] && docInfo.slots_booked[slotDate].includes(slotTime)? false:true ;
-  console.log(isSlotAvailable);
+ 
   if(isSlotAvailable) 
   {
  timeslots.push({datetime:new Date(currentdate),time:formattedTime});
@@ -117,13 +131,33 @@ const Appointment = () => {
 
 }
   useEffect(()=>{
-    fetchDocInfo();
    
-  },[docId]);
+    fetchDocInfo();
+    
+   
+  },[docId,doctors]);
+
   useEffect(()=>{
+      if(docInfo)
+         
     getAvailableSlots();
-    console.log(docId);
+   
   },[docInfo]);
+ 
+  if (loadingSlots) {
+    return (
+      <div className="p-6">
+        <p>Loading doctor info...</p>
+      </div>
+    );
+  }
+  if(notfound){
+    return(
+      <div className="p-6">
+        <h1 className="text-black-600 text-2xl ">Doctor info not found</h1>
+      </div>
+    )
+  }
 
     return docInfo && (
     <div >
@@ -173,4 +207,5 @@ const Appointment = () => {
   )
 }
 
-export default Appointment
+
+export default Appointment  

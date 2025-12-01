@@ -153,8 +153,18 @@ const bookAppointment = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 }
-            
+
+            const listAppointments = async (req, res) => {
+                try {
+                    const { userId } = req.body;
+                    const appointments = await AppointmentModel.find({ userId }).sort({ date: -1 });
+                    res.status(200).json({ success: true, appointments: appointments });
+                } catch (error) {
+                    console.error("Error in listing appointments:", error);     
+                    res.status(500).json({ success: false, message: error.message });
+                }
+            };
 
 
-    export { registerUser , loginUser , getProfile , updateProfile,bookAppointment};
+    export { registerUser , loginUser , getProfile , updateProfile,bookAppointment, listAppointments};
     
