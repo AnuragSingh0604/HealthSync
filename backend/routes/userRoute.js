@@ -8,5 +8,6 @@ userRouter.post('/login', loginUser);
 userRouter.post('/profile',authUser, getProfile);
 userRouter.put('/profile',authUser,upload.single('image'), updateProfile);
 userRouter.post('/book-appointment',authUser, bookAppointment);
-userRouter.get('/my-appointments',authUser, listAppointments);
+userRouter.post('/my-appointments',authUser, listAppointments);
 export default userRouter;
+

@@ -155,16 +155,45 @@ const bookAppointment = async (req, res) => {
 }
 
             const listAppointments = async (req, res) => {
+               
                 try {
+                   
                     const { userId } = req.body;
                     const appointments = await AppointmentModel.find({ userId }).sort({ date: -1 });
+                   
                     res.status(200).json({ success: true, appointments: appointments });
+
                 } catch (error) {
                     console.error("Error in listing appointments:", error);     
-                    res.status(500).json({ success: false, message: error.message });
+                    res.json({ success: false, message: error.message });
                 }
             };
+            const cancelAppointment = async (req, res) => {     
+                try {
+                    const { appointmentId ,userId} = req.body;      
+
+                    const appointment = await AppointmentModel.findById(appointmentId); 
+                    if (appointment.userId !== userId) {
+                        return res.status(404).json({ success: false, message: "Appointment not found" });
+                    }
+                    await AppointmentModel.findByIdAndUpdate(appointmentId,{cancelled:true });
+                    const {doctorId,slotDate,slotTime}=appointment;
+                    const doctorData = await DoctorModel.findById(doctorId).select('-password');
+                    let slots_booked = doctorData.slots_booked || {};
+                    if (slots_booked[slotDate]) {
+                        slots_booked[slotDate] = slots_booked[slotDate].filter(time => time !== slotTime);
+                        await DoctorModel.findByIdAndUpdate(doctorId, { slots_booked: slots_booked });
+                    }
+                    res.status(200).json({ success: true, message: "Appointment cancelled successfully" });
+
+                } catch (error) {
+                    console.error("Error in cancelling appointment:", error);
+                    res.status(500).json({ success: false, message: error.message });
+                }
+            }
 
 
-    export { registerUser , loginUser , getProfile , updateProfile,bookAppointment, listAppointments};
+
+
+    export { registerUser , loginUser , getProfile , updateProfile,bookAppointment, listAppointments, cancelAppointment};
     
