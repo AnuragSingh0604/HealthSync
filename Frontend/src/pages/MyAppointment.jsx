@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import { AppContext } from '../contexts/AppContext';
 import axios from 'axios';
 import {toast} from "react-toastify";
+import {useNavigate} from "react-router-dom"
 
 
 const MyAppointment = () => {
@@ -11,7 +12,7 @@ const MyAppointment = () => {
 
   const [appointments,setAppointments]=React.useState([]);
   const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  
+  const navigate=useNavigate();
   const formatDate=(dateStr)=>{
     const dateArray=dateStr.split("-");
     return dateArray[0]+" "+months[parseInt(dateArray[1])-1]+" "+dateArray[2];
@@ -61,6 +62,60 @@ const MyAppointment = () => {
       setLoading(false);
     }
   }
+  const appointmentRazorpayPayment=async(appointmentId)=>{
+    try{
+      setLoading(true);
+      const {data}=await axios.post(`${backendUrl}/user/razorpay-payment`,{appointmentId},{
+        headers:{   authorization:`Bearer ${token}`,  },
+      });
+      if(data && data.success){
+        initPay(data.order);
+       
+      }
+      else{
+        toast.error(data.message);
+      } 
+  }
+    catch(error){
+      toast.error("Error in payment:", error.message);
+    }
+    finally{
+      setLoading(false);
+    }
+  };
+  const initPay=(order)=>{
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID, 
+      amount: order.amount,
+      currency: order.currency,
+      name: "HealthSync",
+      description: "Appointment Payment",
+      order_id: order.id,
+      receipt: order.receipt,
+      handler: async function (response) {
+        try{
+          const {data}=await axios.post(`${backendUrl}/user/verify-payment`,response,{
+        headers:{   authorization:`Bearer ${token}`,  },
+      });
+        if(data && data.success){
+          toast.success(data.message);
+          await getMyAppointments();
+          await getAllDoctors();  
+        }
+        else{
+          toast.error(data.message);
+        } 
+        }
+        catch(error){
+             toast.error(error.message)
+        }
+        
+      }
+
+  }
+    const rzp1 = new window.Razorpay(options);
+    rzp1.open();
+}
   React.useEffect(()=>{
     if(token)
     getMyAppointments();
@@ -91,9 +146,13 @@ const MyAppointment = () => {
           </div> 
           <div></div>
           <div className='flex flex-col gap-2 justify-end'>
-            { !item.cancelled && <button className='text-sm text-stone-500 text-center sm:min-w-48 py-2 px-1 border rounded  hover:bg-primary hover:text-white transition-all duration-300' >Pay Online</button>}
-            { !item.cancelled &&  <button className='px-1 text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300' onClick={cancelAppointment(item._id)}>Cancel appointment</button>}
-            { item.cancelled && <p className='text-red-600 font-medium sm:min-w-48 py-2 border border-red-500 rounded text-red-500'>Appointment cancelled</p>}
+             {!item.cancelled && item.payment && <button className='sm:min-w-48 py-2 border rounded text-stone-500 bg-indigo-100'>Paid</button>}
+           
+            {  !item.cancelled &&  !item.payment && <button onClick={()=>appointmentRazorpayPayment(item._id)} className='text-sm text-stone-500 text-center sm:min-w-48 py-2 px-1 border rounded  hover:bg-primary hover:text-white transition-all duration-300' >Pay Online</button>}
+            { !item.cancelled &&  <button className='px-1 text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300' onClick={() => cancelAppointment(item._id)
+}>Cancel appointment</button>}
+            { item.cancelled && <p className='text-red-600 font-medium sm:min-w-48 py-2 border border-red-500 rounded text-red-500 text-center'>Appointment cancelled</p>}
+            
           </div>
           </div>
 

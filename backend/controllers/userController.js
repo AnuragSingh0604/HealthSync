@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import AppointmentModel from "../models/appointmentModel.js";
 import { v2 as cloudinary } from 'cloudinary';
 import DoctorModel from "../models/doctorModel.js";
+import razorpay from 'razorpay';
 
 const registerUser = async (req, res) => {
     try {
@@ -191,9 +192,60 @@ const bookAppointment = async (req, res) => {
                     res.status(500).json({ success: false, message: error.message });
                 }
             }
+    const razorpayInstance=new razorpay({
+        key_id:process.env.RAZORPAY_KEY_ID,
+        key_secret:process.env.RAZORPAY_KEY_SECRET,
+      });
+      const razorpayPayment=async(req,res)=>{
+           const {appointmentId}=req.body;
+           try{
+            const appointmentData=await AppointmentModel.findById(appointmentId);
+            
+            if(!appointmentData || appointmentData.cancelled){
+                return res.status(404).json({success:false,message:"Appointment not found"});
+            }
+            //creating option object for razorpay order
+            const options={
+                amount: appointmentData.amount * 100
+,
+                currency:process.env.CURRENCY,
+                receipt: `ro_${appointmentId}`,
+
+                payment_capture:1,
+            };
+            const order=await razorpayInstance.orders.create(options);
+            res.status(200).json({success:true,order:order});
+           }
+              catch(error){   
+            console.error("Error in creating razorpay order:", error);
+            res.status(500).json({ success: false, message: error.message });  
+              }
+      };
+      const verifyPayment=async(req,res)=>{
+        try{
+             const {razorpay_order_id,razorpay_payment_id,razorpay_signature}=req.body;
+             const orderInfo= await razorpayInstance.orders.fetch(razorpay_order_id);
+             console.log("Order Info:", orderInfo);
+
+             if(orderInfo.status==="paid"){
+                const receipt = orderInfo.receipt;  
+              const appointmentId = receipt.split("_")[1];
+
+                await AppointmentModel.findByIdAndUpdate(appointmentId,{payment:true});
+                return res.status(200).json({success:true,message:"Payment Successful and appointment confirmed"});
+             }
+             else{
+                return res.status(400).json({success:false,message:"Payment failed"});
+             }
+        }catch(error){
+            console.error("Error in verifying payment:", error);
+            res.status(500).json({ success: false, message: error.message });   
+       
+            }
+       
+        
+      }
 
 
-
-
-    export { registerUser , loginUser , getProfile , updateProfile,bookAppointment, listAppointments, cancelAppointment};
+    export { registerUser , loginUser , getProfile , updateProfile,bookAppointment, listAppointments, cancelAppointment,razorpayPayment,verifyPayment};
     
