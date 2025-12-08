@@ -12,11 +12,12 @@ const MyAppointment = () => {
 
   const [appointments,setAppointments]=React.useState([]);
   const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  const navigate=useNavigate();
+ 
   const formatDate=(dateStr)=>{
     const dateArray=dateStr.split("-");
     return dateArray[0]+" "+months[parseInt(dateArray[1])-1]+" "+dateArray[2];
   }
+   const navigate=useNavigate();
   const getMyAppointments=async()=>{
     try{
       setLoading(true);

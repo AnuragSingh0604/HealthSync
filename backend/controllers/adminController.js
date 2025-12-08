@@ -81,4 +81,25 @@ const apponitments=async(req,res)=>{
         res.status(500).json({success:false,message:error.message});
     }
 }
-    export {addDoctor,loginAdmin,allDoctors,apponitments};
+const appointmentCancel = async (req, res) => {     
+                try {
+                    const { appointmentId } = req.body;      
+
+                    const appointment = await AppointmentModel.findById(appointmentId); 
+                    
+                    await appointmentModel.findByIdAndUpdate(appointmentId,{cancelled:true });
+                    const {doctorId,slotDate,slotTime}=appointment;
+                    const doctorData = await DoctorModel.findById(doctorId).select('-password');
+                    let slots_booked = doctorData.slots_booked || {};
+                    if (slots_booked[slotDate]) {
+                        slots_booked[slotDate] = slots_booked[slotDate].filter(time => time !== slotTime);
+                        await DoctorModel.findByIdAndUpdate(doctorId, { slots_booked: slots_booked });
+                    }
+                    res.status(200).json({ success: true, message: "Appointment cancelled successfully" });
+
+                } catch (error) {
+                    console.error("Error in cancelling appointment:", error);
+                    res.status(500).json({ success: false, message: error.message });
+                }
+            }
+    export {addDoctor,loginAdmin,allDoctors,apponitments,appointmentCancel};
