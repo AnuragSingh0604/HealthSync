@@ -8,8 +8,14 @@ const AppContextProvider =(props)=>{
         return age;
 
     }
+    const months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const formatDate=(dateStr)=>{
+    const dateArray=dateStr.split("-");
+    return dateArray[0]+" "+months[parseInt(dateArray[1])-1]+" "+dateArray[2];
+  }
     const value={
-       calculateAge
+       calculateAge,
+       formatDate
     }
 
     return(

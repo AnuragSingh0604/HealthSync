@@ -1,22 +1,24 @@
 import React, { useContext } from 'react'
-import { assets } from '../assets/assets_admin/assets';
+
 import { useState } from 'react';
 import { AdminContext } from '../context/AdminContext.jsx';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { data } from 'react-router-dom';
+import { DoctorContext } from '../context/DoctorContext.jsx';
 
 const Login = () => {
     const [state, setState] = useState('Admin');
     const [email,setEmail]=useState("");
     const [password,setPassword]=useState("");
     const {setAToken,backendUrl}=useContext(AdminContext);
+    const {setDToken}=useContext(DoctorContext);
     const handleSubmit=async(e)=>{
            
         e.preventDefault();
     try{
   if(state==='Admin'){
-    const response=await axios.post(`${backendUrl}/api/admin/login`,{email,password});
+    const response=await axios.post(`${backendUrl}/admin/login`,{email,password});
     if(response.data.success){
         localStorage.setItem("aToken",response.data.token);
     setAToken(response.data.token);
@@ -26,12 +28,23 @@ const Login = () => {
   }
     
   }
+  else{
+    const response=await axios.post(`${backendUrl}/doctor/login`,{email,password});
+    if(response.data.success){
+        localStorage.setItem("dToken",response.data.token);
+    setDToken(response.data.token);
+    }
+    else{
+    toast.error(data.message );
+  }
   
   
-    } catch(err){
-        console.log(err);
     }
 }
+ catch(err){
+    toast.error("Error occurred: "+ err.message);
+    }
+    }
 
        
   return (

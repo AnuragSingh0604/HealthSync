@@ -6,7 +6,7 @@ import { AppContext } from '../../context/AppContext';
 
 const Dashboard = () => {
   const {aToken,getDashboardData,dashData,cancelAppointment}=useContext(AdminContext);
-  const {slotDateFormat}=useContext(AppContext);
+  const {formatDate}=useContext(AppContext);
   useEffect(() => {
     if(aToken)
     getDashboardData();
@@ -48,10 +48,10 @@ const Dashboard = () => {
        { dashData.latestAppointments.map((item,index)=>(
           <div key={index} className='flex flex-wrap justify-between max-sm:gap-2 sm:grid grid-cols-[0.5fr_3fr_1fr_3fr_3fr_1fr] items-center text-gray-500 py-3 px-6 border-b hover:bg-gray-100'>
             <p className='max-sm:hidden'>{index+1}</p>
-            <img src={item.doctorData.image} className='w-8 rounded-full bg-gray-200 hidden max-sm:block'/>
+            <img src={item.doctorData.image} alt="" className='w-8 rounded-full bg-gray-200 hidden max-sm:block'/>
             <div className='flex-1'>
               <p className='text-gray-800 font-medium'>{item.doctorData.name}</p>
-              <p className='text-gray-600'>{slotDateFormat(item.slotDate)}</p>
+              <p className='text-gray-600'>{formatDate(item.slotDate)}</p>
             </div>
             {item.cancelled ? <p className='text-red-400 text-xs font-medium'>Cancelled</p> : <img onClick={()=>cancelAppointment(item._id)} className='w-10 cursor-pointer' src={assets.cancel_icon}/>}
            
