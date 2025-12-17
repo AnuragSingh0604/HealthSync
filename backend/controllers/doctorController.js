@@ -103,5 +103,36 @@ const appointmentCancelled=async(req,res)=>{
     }
 }
 
+const doctordashboard=async(req,res)=>{
+    try{
+        const doctorId=req.body.doctorId;
+        const appointments=await Appointment.find({doctorId});
+        let earnings=0;
+        appointments.map((item)=>{
+            if(item.isCompleted && !item.cancelled || item.payment){
+                earnings+=item.amount;
+            }
+        })
+        let patients=[];
+        appointments.map((item)=>{
+            if(!patients.includes(item.userId)){
+                patients.push(item.userId);
+            }
+        });
+        const dashData={
+            totalAppointments:appointments.length,
+            totalEarnings:earnings,
+            totalPatients:patients.length,
+            latestAppointments:appointments.slice(-5).reverse(),
+        }
+        res.status(200).json({success:true,dashData});
+            }
+        
+        
+    catch(error){
+        console.error("Error in doctordashboard:",error);
+        res.status(500).json({success:false,message:error.message});
+    }
+}
 
-export {changeAvailability,getDoctorList,loginDoctor,appointmentsByDoctor,appointmentCompleted,appointmentCancelled};
+export {changeAvailability,getDoctorList,loginDoctor,appointmentsByDoctor,appointmentCompleted,appointmentCancelled,doctordashboard};

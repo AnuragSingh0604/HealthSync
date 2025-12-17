@@ -6,6 +6,7 @@ const DoctorContextProvider =(props)=>{
     const backendUrl =import.meta.env.VITE_BACKEND_URL;
     const [dToken,setDToken]=useState(localStorage.getItem('dToken')?localStorage.getItem("dToken"):"");
     const [appointments,setAppointments]=useState([]);
+    const [dashData,setDashData]=useState(false);
     const getAppointmentsByDoctor=async()=>{
         try{
         const {data}=await axios.post(`${backendUrl}/doctor/appointments-by-doctor`,{},{
@@ -64,6 +65,24 @@ const DoctorContextProvider =(props)=>{
             toast.error(error.message);
         }
     };
+    const getDatshData=async()=>{
+        try{    
+            const {data}=await axios.post(`${backendUrl}/doctor/dashboard`,{},{
+                headers:{
+                   Authorization: `Bearer ${dToken}`,
+                }
+            });
+            if(data.success){
+                setDashData(data.dashData);
+            }
+            else{
+                toast.error(data.message);
+            }
+        }catch(error){
+            console.error("Error fetching dashboard data:",error);
+            toast.error(error.message);
+        }
+    };
 
     const value={
          
@@ -73,7 +92,9 @@ const DoctorContextProvider =(props)=>{
         appointments,
         getAppointmentsByDoctor,
         completeAppointment,
-        cancelAppointment
+        cancelAppointment,
+        dashData,
+        getDatshData
     }
 
     return(
