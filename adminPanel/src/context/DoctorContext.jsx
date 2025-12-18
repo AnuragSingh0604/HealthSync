@@ -7,6 +7,9 @@ const DoctorContextProvider =(props)=>{
     const [dToken,setDToken]=useState(localStorage.getItem('dToken')?localStorage.getItem("dToken"):"");
     const [appointments,setAppointments]=useState([]);
     const [dashData,setDashData]=useState(false);
+    const [profileData,setProfileData]=useState(null);  
+    const [updateProfileData,setUpdateProfileData]=useState(null);
+
     const getAppointmentsByDoctor=async()=>{
         try{
         const {data}=await axios.post(`${backendUrl}/doctor/appointments-by-doctor`,{},{
@@ -15,10 +18,10 @@ const DoctorContextProvider =(props)=>{
                 }
             });
             if(data.success){
-                setAppointments(data.appointments);
+               setDashData(data.dashData);
             }
             else{
-                setAppointments([]);
+                
                 toast.error(data.message);
             }
         }catch(error){
@@ -83,6 +86,43 @@ const DoctorContextProvider =(props)=>{
             toast.error(error.message);
         }
     };
+    const getProfileData=async()=>{
+        try{    
+            const {data}=await axios.post(`${backendUrl}/doctor/profile`,{},{
+                headers:{
+                   Authorization: `Bearer ${dToken}`,
+                }
+            });
+            if(data.success){
+                setProfileData(data.doctor);
+            }
+            else{
+                toast.error(data.message);
+            }
+        }catch(error){
+            console.error("Error fetching profile data:",error);
+            toast.error(error.message);
+        }
+    };
+    const updateProfile=async(profileUpdates)=>{
+        try{    
+            const {data}=await axios.post(`${backendUrl}/doctor/update-profile`,profileUpdates,{
+                headers:{
+                   Authorization: `Bearer ${dToken}`,
+                }
+            });
+            if(data.success){
+                setUpdateProfileData(data.updatedProfileData);
+                toast.success(data.message);
+            }
+            else{
+                toast.error(data.message);
+            }
+        }catch(error){
+            console.error("Error updating profile data:",error);
+            toast.error(error.message);
+        }
+    };
 
     const value={
          
@@ -94,7 +134,12 @@ const DoctorContextProvider =(props)=>{
         completeAppointment,
         cancelAppointment,
         dashData,
-        getDatshData
+        getDatshData,
+        profileData,
+        getProfileData,
+        updateProfile,
+        updateProfileData,
+        setUpdateProfileData
     }
 
     return(
