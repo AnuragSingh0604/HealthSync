@@ -22,8 +22,10 @@ const DoctorsList = () => {
                 <p className='text-neutral-800 text-lg font-medium'>{items.name}</p>
                 <p className='text-zinc-600 text-sm'>{items.speciality}</p>
                 <div className='mt-2 flex items-center gap-1 text-sm'>
-                  <input onChange={()=>changeAvailability(items._id)} type='checkbox' checked={items.available}></input>
-                  <div>{items.available?'Available':'Not Available'}</div>
+                  <input onChange={()=>changeAvailability(items._id)} type='checkbox' checked={items.availability
+}></input>
+                  <div>{items.availability
+?'Available':'Not Available'}</div>
                 </div>
                 </div>
               </div>

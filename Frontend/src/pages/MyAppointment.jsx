@@ -132,7 +132,7 @@ const MyAppointment = () => {
     <div>
       <p className='pb-3 mt-12 font-medium text-zinc-700 border-b'>My appointments</p>
       <div>
-        {appointments.slice(0,2).map((item,index)=>( 
+        {appointments.slice(0,5).map((item,index)=>( 
           <div className="grid grid-cols-[1fr_2fr] gap-4 sm:flex sm:gap-6 py-2 border-b" key={index}>
           <div>
             <img className="w-32 bg-indigo-50" src={item.doctorData.image} alt=""/>
@@ -147,13 +147,13 @@ const MyAppointment = () => {
           </div> 
           <div></div>
           <div className='flex flex-col gap-2 justify-end'>
-             {!item.cancelled && item.payment && <button className='sm:min-w-48 py-2 border rounded text-stone-500 bg-indigo-100'>Paid</button>}
+             {!item.cancelled && item.payment && !item.isCompleted && <button className='sm:min-w-48 py-2 border rounded text-stone-500 bg-indigo-100'>Paid</button>}
            
-            {  !item.cancelled &&  !item.payment && <button onClick={()=>appointmentRazorpayPayment(item._id)} className='text-sm text-stone-500 text-center sm:min-w-48 py-2 px-1 border rounded  hover:bg-primary hover:text-white transition-all duration-300' >Pay Online</button>}
-            { !item.cancelled &&  <button className='px-1 text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300' onClick={() => cancelAppointment(item._id)
+            {  !item.cancelled &&  !item.payment && !item.isCompleted && <button onClick={()=>appointmentRazorpayPayment(item._id)} className='text-sm text-stone-500 text-center sm:min-w-48 py-2 px-1 border rounded  hover:bg-primary hover:text-white transition-all duration-300' >Pay Online</button>}
+            { !item.cancelled && !item.isCompleted && <button className='px-1 text-sm text-stone-500 text-center sm:min-w-48 py-2 border rounded hover:bg-red-600 hover:text-white transition-all duration-300' onClick={() => cancelAppointment(item._id)
 }>Cancel appointment</button>}
-            { item.cancelled && <p className='text-red-600 font-medium sm:min-w-48 py-2 border border-red-500 rounded text-red-500 text-center'>Appointment cancelled</p>}
-            
+            { item.cancelled && !item.isCompleted && <p className='text-red-600 font-medium sm:min-w-48 py-2 border border-red-500 rounded text-red-500 text-center'>Appointment cancelled</p>}
+            {item.isCompleted && <button className='sm:min-w-48 py-2 border rounded text-green-600 bg-green-100'>Appointment completed</button>}
           </div>
           </div>
 
