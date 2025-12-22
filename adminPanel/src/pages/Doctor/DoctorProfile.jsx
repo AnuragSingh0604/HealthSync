@@ -3,8 +3,19 @@ import { useContext ,useEffect} from 'react';
 import { DoctorContext } from '../../context/DoctorContext';
 
 const DoctorProfile = () => {
-  const {dToken,profileData,getProfileData,updateProfile,updateProfileData,setUpdateProfileData}=useContext(DoctorContext);
+  const {dToken,profileData,setProfileData,getProfileData,updateProfile,}=useContext(DoctorContext);
   const [isEdit,setIsEdit]=useState(false);
+  
+  const updatedProfileData=async()=>{
+    try{
+      await updateProfile(profileData);
+    }
+    finally{ 
+setIsEdit(false);
+    }
+   
+    
+  };
   useEffect(()=>{
     if(dToken){
       getProfileData();
@@ -27,18 +38,33 @@ const DoctorProfile = () => {
             <p className="text-sm text-gray-600 max-w-[700px] mt-1">{profileData.about}</p>
             
           </div>
-          <p className='text-gray-600 font-medium mt-4'>Appointment fee:<span className='text-gray-800'>$ {isEdit ? <input type="number" onChange={(e)=>setUpdateProfileData(prev=>({...prev,fees:e.target.value}))} value={updateProfileData}></input>:profileData.fees}</span></p>
+          <p className='text-gray-600 font-medium mt-4'>Appointment fee:<span className='text-gray-800'>$ {isEdit ? <input type="number" onChange={(e)=>setProfileData(prev=>({...prev,fees:e.target.value}))} value={profileData.fees}></input>:profileData.fees}</span></p>
           <div className='flexgap-2 py-2'>
             <p>Address:</p>
-            <p className='text:sm'>{profileData.address.line1} <br></br> 
-            {profileData.address.line2}</p>
+            <p className='text:sm'>{isEdit ? <input type="text" onChange={(e)=>setProfileData(prev=>({...prev,address:{...prev.address,address1:e.target.value}}))} value={profileData.address.address1} /> : profileData.address.address1} <br></br> 
+            {isEdit ? <input type="text" onChange={(e)=>setProfileData(prev=>({...prev,address:{...prev.address,
+address2:e.target.value}}))} value={profileData.address.
+address2} /> : profileData.address.
+address2}</p>
           </div>
           <div className='flex gap-1 pt-2'>
-            <input checked={profileData.available} type="checkbox" name="" id=""></input>
+            <input
+  type="checkbox"
+  checked={profileData.availability}
+  disabled={!isEdit}
+  onChange={(e) => {
+    setProfileData(prev => ({
+      ...prev,
+      availability: e.target.checked
+    }));
+  }}
+/>
+
             <label htmlFor=''>Available for appointments</label>
           </div>
-          <button onClick={()=>setIsEdit(true)} className='px-4 py-1 border border-primary text-sm rounded-full mt-5 hover:bg-primary hover:text-white transition-all'>Update Profile</button>
-
+          {isEdit ?  <button onClick={updatedProfileData} className='px-4 py-1 border border-primary text-sm rounded-full mt-5 hover:bg-primary hover:text-white transition-all'>Save</button>:<button onClick={()=>setIsEdit(true)} className='px-4 py-1 border border-primary text-sm rounded-full mt-5 hover:bg-primary hover:text-white transition-all'>Update Profile</button>
+}
+          
         </div>
       </div>
 

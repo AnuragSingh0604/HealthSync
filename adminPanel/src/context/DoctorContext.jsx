@@ -8,7 +8,7 @@ const DoctorContextProvider =(props)=>{
     const [appointments,setAppointments]=useState([]);
     const [dashData,setDashData]=useState(false);
     const [profileData,setProfileData]=useState(null);  
-    const [updateProfileData,setUpdateProfileData]=useState(null);
+    
 
     const getAppointmentsByDoctor=async()=>{
         try{
@@ -18,7 +18,7 @@ const DoctorContextProvider =(props)=>{
                 }
             });
             if(data.success){
-               setDashData(data.dashData);
+               setAppointments(data.appointments);
             }
             else{
                 
@@ -112,8 +112,9 @@ const DoctorContextProvider =(props)=>{
                 }
             });
             if(data.success){
-                setUpdateProfileData(data.updatedProfileData);
+               
                 toast.success(data.message);
+                getProfileData();
             }
             else{
                 toast.error(data.message);
@@ -136,10 +137,10 @@ const DoctorContextProvider =(props)=>{
         dashData,
         getDatshData,
         profileData,
+        setProfileData,
         getProfileData,
         updateProfile,
-        updateProfileData,
-        setUpdateProfileData
+       
     }
 
     return(
